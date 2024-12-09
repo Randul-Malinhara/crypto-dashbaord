@@ -1,5 +1,6 @@
 # cryptocurrency_dashboard.py
 
+import datetime
 import requests
 import pandas as pd
 import dash
@@ -8,6 +9,7 @@ from dash.dependencies import Input, Output
 from pycoingecko import CoinGeckoAPI
 import plotly.express as px
 import dash_bootstrap_components as dbc
+from textblob import TextBlob
 
 # Initialize Dash app
 # Update app initialization
@@ -27,6 +29,8 @@ def fetch_market_data():
     except Exception as e:
         print(f"Error fetching market data: {e}")
         return pd.DataFrame()
+
+
 
 # Function to fetch cryptocurrency news
 def fetch_crypto_news():
@@ -75,13 +79,23 @@ app.layout = dbc.Container([
 html.H4("Search for News"),
 dcc.Input(id="search-bar", type="text", placeholder="Search news...", className="mb-3 form-control"),
 
-# Update callback
+# Function to analyze sentiment of news articles
+def analyze_sentiment(articles):
+    for article in articles:
+        sentiment_score = TextBlob(article["title"]).sentiment.polarity
+        article["sentiment"] = "Positive" if sentiment_score > 0 else "Negative" if sentiment_score < 0 else "Neutral"
+    return articles
+
+# Update news callback to include sentiment
 @app.callback(
     Output("news-container", "children"),
     [Input("interval-component", "n_intervals"), Input("search-bar", "value")]
 )
+
 def update_news(n, search_term):
     news = fetch_crypto_news()
+    news = analyze_sentiment(news)
+
     if not news:
         return html.Div("No news available.", className="text-danger")
 
@@ -91,7 +105,7 @@ def update_news(n, search_term):
     return html.Ul([
         html.Li([
             html.A(article["title"], href=article["url"], target="_blank"),
-            html.Span(f" ({article['source']}, {datetime.strptime(article['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%b %d, %Y')})")
+            html.Span(f" ({article['source']}, {datetime.strptime(article['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%b %d, %Y')}, Sentiment: {article['sentiment']})")
         ])
         for article in news
     ])
