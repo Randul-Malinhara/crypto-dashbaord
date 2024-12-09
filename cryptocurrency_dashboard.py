@@ -37,22 +37,26 @@ def fetch_crypto_news():
         "sortBy": "publishedAt",
         "apiKey": API_KEY
     }
-    response = requests.get(API_URL, params=params)
-    if response.status_code == 200:
-        articles = response.json().get("articles", [])
-        return [
-            {
-                "title": article["title"],
-                "source": article["source"]["name"],
-                "publishedAt": article["publishedAt"],
-                "url": article["url"]
-            }
-            for article in articles
-        ]
-    else:
-        print(f"Error fetching news: {response.status_code}")
+    try:
+        response = requests.get(API_URL, params=params)
+        if response.status_code == 200:
+            articles = response.json().get("articles", [])
+            return [
+                {
+                    "title": article["title"],
+                    "source": article["source"]["name"],
+                    "publishedAt": article["publishedAt"],
+                    "url": article["url"]
+                }
+                for article in articles
+            ]
+        else:
+            print(f"Error fetching news: {response.status_code}")
+            return []
+    except Exception as e:
+        print(f"Error fetching news: {e}")
         return []
-
+    
 # Refactor app layout to use dbc.Container and dbc.Row
 app.layout = dbc.Container([
     html.H1("Enhanced Cryptocurrency Dashboard", className="text-center my-4"),
@@ -116,6 +120,7 @@ def update_market_data(n):
         labels={"current_price": "Price (USD)", "price_change_percentage_24h": "% Change (24h)"},
         title="Top Cryptocurrencies by Market Cap"
     )
+    
     fig.update_layout(yaxis_title="Price (USD)", xaxis_title="Cryptocurrency")
 
     # Market Table
