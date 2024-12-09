@@ -109,6 +109,48 @@ dbc.Col([
     [Output("market-chart", "figure"), Output("market-table-container", "children")],
     [Input("interval-component", "n_intervals")]
 )
+
+# Function to fetch historical market data for a specific cryptocurrency
+def fetch_historical_data(crypto_id):
+    try:
+        data = cg.get_coin_market_chart_by_id(id=crypto_id, vs_currency='usd', days='30')
+        prices = data['prices']
+        df = pd.DataFrame(prices, columns=["timestamp", "price"])
+        df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+        return df
+    except Exception as e:
+        print(f"Error fetching historical data: {e}")
+        return pd.DataFrame()
+
+# Add historical data visualization callback
+@app.callback(
+    Output("historical-chart", "figure"),
+    [Input("crypto-dropdown", "value")]
+)
+def update_historical_chart(crypto_id):
+    if not crypto_id:
+        return px.line()
+    
+    df = fetch_historical_data(crypto_id)
+    if df.empty:
+        return px.line()
+
+    fig = px.line(df, x="timestamp", y="price", title=f"{crypto_id} Price Trend (30 Days)")
+    fig.update_layout(xaxis_title="Date", yaxis_title="Price (USD)")
+    return fig
+
+# Add layout for historical data
+layout_historical = html.Div([
+    html.H4("Historical Data", className="mb-3"),
+    dcc.Dropdown(id="crypto-dropdown", options=[
+        {"label": crypto.capitalize(), "value": crypto} for crypto in ["bitcoin", "ethereum", "dogecoin"]
+    ], placeholder="Select a Cryptocurrency"),
+    dcc.Graph(id="historical-chart")
+])
+
+# Add historical data section to the main layout
+app.layout.children.append(layout_historical)
+
 def update_market_data(n):
     df = fetch_market_data()
     if df.empty:
