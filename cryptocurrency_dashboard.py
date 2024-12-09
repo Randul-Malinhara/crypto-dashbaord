@@ -7,9 +7,11 @@ from dash import html, dcc
 from dash.dependencies import Input, Output
 from pycoingecko import CoinGeckoAPI
 import plotly.express as px
+import dash_bootstrap_components as dbc
 
 # Initialize Dash app
-app = dash.Dash(__name__)
+# Update app initialization
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.LUX])
 app.title = "Cryptocurrency News Dashboard"
 
 # Initialize CoinGecko API
@@ -51,19 +53,19 @@ def fetch_crypto_news():
         print(f"Error fetching news: {response.status_code}")
         return []
 
-# Layout of the app
-app.layout = html.Div([
-    html.H1("Cryptocurrency News Dashboard", style={"textAlign": "center"}),
-    html.Div("Stay updated with the latest cryptocurrency news."),
-
+# Refactor app layout to use dbc.Container and dbc.Row
+app.layout = dbc.Container([
+    html.H1("Enhanced Cryptocurrency Dashboard", className="text-center my-4"),
+    dbc.Row([
+        dbc.Col([...], md=6),  # News section
+        dbc.Col([...], md=6)   # Market data section
+    ]),
     dcc.Interval(
         id='interval-component',
         interval=10*60*1000,  # Update every 10 minutes
         n_intervals=0
-    ),
-
-    html.Div(id="news-container"),
-])
+    )
+], fluid=True)
 
 # Update app layout
 html.H4("Search for News"),
