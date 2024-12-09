@@ -116,9 +116,9 @@ def update_market_data(n):
 
     # Market Chart
     fig = px.bar(
-        df, x="name", y="current_price", color="price_change_percentage_24h",
-        labels={"current_price": "Price (USD)", "price_change_percentage_24h": "% Change (24h)"},
-        title="Top Cryptocurrencies by Market Cap"
+    df, x="name", y="current_price", color="price_change_percentage_24h",
+    labels={"current_price": "Price (USD)", "price_change_percentage_24h": "% Change (24h)"},
+    title="Top Cryptocurrencies by Market Cap"
     )
     
     fig.update_layout(yaxis_title="Price (USD)", xaxis_title="Cryptocurrency")
