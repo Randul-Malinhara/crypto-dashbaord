@@ -65,23 +65,31 @@ app.layout = html.Div([
     html.Div(id="news-container"),
 ])
 
-# Callback to update news
+# Update app layout
+html.H4("Search for News"),
+dcc.Input(id="search-bar", type="text", placeholder="Search news...", className="mb-3 form-control"),
+
+# Update callback
 @app.callback(
     Output("news-container", "children"),
-    [Input("interval-component", "n_intervals")]
+    [Input("interval-component", "n_intervals"), Input("search-bar", "value")]
 )
-def update_news(n):
+def update_news(n, search_term):
     news = fetch_crypto_news()
     if not news:
-        return html.Div("No news available.")
+        return html.Div("No news available.", className="text-danger")
+
+    if search_term:
+        news = [article for article in news if search_term.lower() in article["title"].lower()]
 
     return html.Ul([
         html.Li([
             html.A(article["title"], href=article["url"], target="_blank"),
-            html.Span(f" ({article['source']}, {article['publishedAt'][:10]})")
+            html.Span(f" ({article['source']}, {datetime.strptime(article['publishedAt'], '%Y-%m-%dT%H:%M:%SZ').strftime('%b %d, %Y')})")
         ])
         for article in news
     ])
+
 
 # Update app layout
 dbc.Col([
