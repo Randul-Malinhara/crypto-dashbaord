@@ -14,7 +14,7 @@ app.title = "Cryptocurrency News Dashboard"
 # Function to fetch cryptocurrency news
 def fetch_crypto_news():
     API_URL = "https://newsapi.org/v2/everything"
-    API_KEY = "b12556176c584ae4b355c3ab4def76b5"  # Replace with your NewsAPI key
+    API_KEY = "API_KEY"  # Replace with your NewsAPI key
     params = {
         "q": "cryptocurrency",
         "sortBy": "publishedAt",
