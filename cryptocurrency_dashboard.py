@@ -165,6 +165,28 @@ layout_historical = html.Div([
 # Add historical data section to the main layout
 app.layout.children.append(layout_historical)
 
+# Callback to update portfolio value
+@app.callback(
+    Output("portfolio-value", "children"),
+    [Input("interval-component", "n_intervals")]
+)
+def update_portfolio_value(n):
+    df = fetch_market_data()
+    if df.empty:
+        return "Error fetching market data."
+
+    total_value = sum(df[df["id"] == crypto]["current_price"].values[0] * qty for crypto, qty in user_portfolio.items())
+    return f"Total Portfolio Value: ${total_value:.2f}"
+
+# Add portfolio tracker layout
+layout_portfolio = html.Div([
+    html.H4("Portfolio Tracker", className="mb-3"),
+    html.Div(id="portfolio-value", className="text-info")
+])
+
+# Add portfolio tracker section to the main layout
+app.layout.children.append(layout_portfolio)
+
 def update_market_data(n):
     df = fetch_market_data()
     if df.empty:
