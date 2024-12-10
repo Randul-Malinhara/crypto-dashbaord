@@ -19,7 +19,7 @@ app.title = "Cryptocurrency News Dashboard"
 # Initialize CoinGecko API
 cg = CoinGeckoAPI()
 
-# Function to fetch cryptocurrency market data
+# Enhanced error handling in fetch_market_data
 def fetch_market_data():
     try:
         data = cg.get_coins_markets(vs_currency='usd', order='market_cap_desc', per_page=10, page=1)
@@ -28,9 +28,7 @@ def fetch_market_data():
         return df
     except Exception as e:
         print(f"Error fetching market data: {e}")
-        return pd.DataFrame()
-
-
+        return pd.DataFrame({"id": [], "name": [], "current_price": [], "market_cap": [], "price_change_percentage_24h": []})
 
 # Function to fetch cryptocurrency news
 def fetch_crypto_news():
