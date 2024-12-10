@@ -1,6 +1,7 @@
 # cryptocurrency_dashboard.py
 
 import datetime
+import logging
 import requests
 import pandas as pd
 import dash
@@ -19,17 +20,22 @@ app.title = "Cryptocurrency News Dashboard"
 # Initialize CoinGecko API
 cg = CoinGeckoAPI()
 
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 # Enhanced error handling in fetch_market_data
 def fetch_market_data():
     try:
+        logging.info("Fetching market data...")
         data = cg.get_coins_markets(vs_currency='usd', order='market_cap_desc', per_page=10, page=1)
+        logging.info("Market data fetched successfully.")
         df = pd.DataFrame(data)
         df = df[["id", "name", "current_price", "market_cap", "price_change_percentage_24h"]]
         return df
     except Exception as e:
-        print(f"Error fetching market data: {e}")
-        return pd.DataFrame({"id": [], "name": [], "current_price": [], "market_cap": [], "price_change_percentage_24h": []})
-
+        logging.error(f"Error fetching market data: {e}")
+        return pd.DataFrame()
+        
 # Function to fetch cryptocurrency news
 def fetch_crypto_news():
     API_URL = "https://newsapi.org/v2/everything"
