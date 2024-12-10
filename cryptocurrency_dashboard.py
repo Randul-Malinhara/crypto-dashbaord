@@ -35,7 +35,7 @@ def fetch_market_data():
     except Exception as e:
         logging.error(f"Error fetching market data: {e}")
         return pd.DataFrame()
-        
+
 # Function to fetch cryptocurrency news
 def fetch_crypto_news():
     API_URL = "https://newsapi.org/v2/everything"
@@ -168,6 +168,10 @@ layout_historical = html.Div([
 
 # Add historical data section to the main layout
 app.layout.children.append(layout_historical)
+
+# User portfolio dictionary
+user_portfolio = {"bitcoin": 2, "ethereum": 5, "dogecoin": 1000}  # Example holdings
+
 
 # Callback to update portfolio value
 @app.callback(
