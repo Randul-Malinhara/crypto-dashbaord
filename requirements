@@ -1,0 +1,8 @@
+pytest
+pandas
+textblob
+dash
+plotly
+dash-bootstrap-components
+requests
+pycoingecko
